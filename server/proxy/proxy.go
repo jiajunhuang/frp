@@ -99,13 +99,15 @@ func (pxy *BaseProxy) GetWorkConnFromPool(src, dst net.Addr) (workConn frpNet.Co
 			dstAddr, dstPortStr, _ = net.SplitHostPort(dst.String())
 			dstPort, _ = strconv.Atoi(dstPortStr)
 		}
-		err := msg.WriteMsg(workConn, &msg.StartWorkConn{
-			ProxyName: pxy.GetName(),
-			SrcAddr:   srcAddr,
-			SrcPort:   uint16(srcPort),
-			DstAddr:   dstAddr,
-			DstPort:   uint16(dstPort),
-		})
+		message := msg.StartWorkConn{
+				ProxyName: pxy.GetName(),
+				SrcAddr:   srcAddr,
+				SrcPort:   uint16(srcPort),
+				DstAddr:   dstAddr,
+				DstPort:   uint16(dstPort),
+			}
+		err := msg.WriteMsg(workConn, &message)
+		workConn.Warn("===== HERE! HERE! HERE!, message is: %+v", message)
 		if err != nil {
 			workConn.Warn("failed to send message to work connection from pool: %v, times: %d", err, i)
 			workConn.Close()
